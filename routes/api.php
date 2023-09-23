@@ -4,24 +4,51 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
-$cinscoreIps = array();
+include_once("./util/LoadedList.php");
+include_once("./util/IPAddressRange.php");
 
-$curl = curl_init();
-curl_setopt($curl, CURLOPT_URL, "https://cinsscore.com/list/ci-badguys.txt");
-curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+$cinscore_list = new LoadedList("https://cinsscore.com/list/ci-badguys.txt");
+$datacenters = new LoadedList("https://raw.githubusercontent.com/client9/ipcat/master/datacenters.csv");
 
-$result = curl_exec($curl);
-curl_close($curl);
+$datacenters->map(function($line) {
+    if (!str_contains($line, ",")) {
+        return null;
+    }
 
-foreach (explode("\n", $result) as $line) {
-    $cinscoreIps[] = $line;
+    $parts = explode(",", $line);
+
+    $object = [];
+
+    try {
+        $object["range"] = new IPAddressRange($parts[0], $parts[1]);
+    } catch (Exception) {
+        echo $line;
+        return null;
+    }
+
+    $object["isp"] = $parts[2];
+
+    return $object;
+});
+
+function check_vpn(string $ipAddress):bool {
+    $curl = curl_init();
+
+    curl_setopt($curl, CURLOPT_URL, "https://blackbox.ipinfo.app/lookup/");
+    curl_setopt($curl, CURLOPT_USERAGENT, "IP Fraud Score Checking");
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+    $result = curl_exec($curl);
+    curl_close($curl);
+
+    return str_contains("Y", $result);
 }
 
 function getFraudScore(string $ipAddress):int {
     $curl = curl_init();
 
     curl_setopt($curl, CURLOPT_URL, "https://scamalytics.com/ip/$ipAddress");
-    curl_setopt($curl, CURLOPT_USERAGENT, "Hostile API");
+    curl_setopt($curl, CURLOPT_USERAGENT, "IP Fraud Score Checking");
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
     $result = curl_exec($curl);
@@ -30,7 +57,7 @@ function getFraudScore(string $ipAddress):int {
     return (int) explode("</div> ", explode("Fraud Score: ", $result)[1])[0];
 }
 
-Route::get('check', function (Request $request, Response $response) use ($cinscoreIps) {
+Route::get('check', function (Request $request, Response $response) use ($datacenters, $cinscore_list) {
     $ip = $request->ip() == "127.0.0.1" ? "12.19.29.29" : $request->ip();
     $curl = curl_init();
 
@@ -41,12 +68,33 @@ Route::get('check', function (Request $request, Response $response) use ($cinsco
     $result = json_decode(curl_exec($curl));
     curl_close($curl);
 
+    $vpn = $datacenters->query_mapped_results(function ($line) use ($ip) {
+        return $line != null && $line["range"]->contains($ip);
+    }) != null;
+
+    if (!$vpn) {
+        $isp = strtolower($result["org"]);
+
+        if (str_contains($isp, "-")) {
+            $isp = explode('-', $isp)[0];
+        }
+
+        $vpn = ($datacenters->query_mapped_results(function ($line) use ($isp) {
+            return $line != null && $line["isp"]->contains($isp);
+        }));
+    }
+
+    if (!$vpn) {
+        $vpn = check_vpn($ip);
+    }
+
     return $response->setStatusCode(201)
         ->header("Content-Type", "application/json")
         ->setContent(json_encode((object) [
             "ip" => $ip,
             "geolocationInfo" => $result,
-            "cinscoreFlagged" => in_array($ip, $cinscoreIps),
-            "fraudScore" => getFraudScore($ip)
+            "cinscoreFlagged" => $cinscore_list->contains($ip),
+            "fraudScore" => getFraudScore($ip),
+            "vpn" => check_vpn($vpn)
         ]));
 });
