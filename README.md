@@ -1,4 +1,5 @@
-# <p align="center">IP Quality Score</p>
+<h1 align="center">IP Quality Score</h1>
+
 <p align="center">Find out what your IP address says about you</p>
 
 ## Description
