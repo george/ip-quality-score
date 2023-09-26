@@ -4,8 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
-include_once("./util/LoadedList.php");
-include_once("./util/IPAddressRange.php");
+include_once("../util/LoadedList.php");
+include_once("../util/IPAddressRange.php");
 
 $cinscore_list = new LoadedList("https://cinsscore.com/list/ci-badguys.txt");
 $datacenters = new LoadedList("https://raw.githubusercontent.com/client9/ipcat/master/datacenters.csv");
@@ -34,7 +34,7 @@ $datacenters->map(function($line) {
 function check_vpn(string $ipAddress):bool {
     $curl = curl_init();
 
-    curl_setopt($curl, CURLOPT_URL, "https://blackbox.ipinfo.app/lookup/");
+    curl_setopt($curl, CURLOPT_URL, "https://blackbox.ipinfo.app/lookup/" . $ipAddress);
     curl_setopt($curl, CURLOPT_USERAGENT, "IP Fraud Score Checking");
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
@@ -65,7 +65,7 @@ Route::get('check', function (Request $request, Response $response) use ($datace
     curl_setopt($curl, CURLOPT_USERAGENT, "Hostile API");
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
-    $result = json_decode(curl_exec($curl));
+    $result = json_decode(curl_exec($curl), true);
     curl_close($curl);
 
     $vpn = $datacenters->query_mapped_results(function ($line) use ($ip) {
@@ -73,15 +73,15 @@ Route::get('check', function (Request $request, Response $response) use ($datace
     }) != null;
 
     if (!$vpn) {
-        $isp = strtolower($result["org"]);
+        $isp = strtolower($result['org']);
 
         if (str_contains($isp, "-")) {
             $isp = explode('-', $isp)[0];
         }
 
         $vpn = ($datacenters->query_mapped_results(function ($line) use ($isp) {
-            return $line != null && $line["isp"]->contains($isp);
-        }));
+            return $line != null && str_contains($line["isp"], $isp);
+        }) != null);
     }
 
     if (!$vpn) {
@@ -95,6 +95,6 @@ Route::get('check', function (Request $request, Response $response) use ($datace
             "geolocationInfo" => $result,
             "cinscoreFlagged" => $cinscore_list->contains($ip),
             "fraudScore" => getFraudScore($ip),
-            "vpn" => check_vpn($vpn)
+            "vpn" => $vpn
         ]));
 });
