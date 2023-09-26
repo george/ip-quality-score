@@ -4,8 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
-include_once("../util/LoadedList.php");
-include_once("../util/IPAddressRange.php");
+include(__DIR__ . "/../util/LoadedList.class.php");
+include(__DIR__ . "/../util/IPAddressRange.class.php");
 
 $cinscore_list = new LoadedList("https://cinsscore.com/list/ci-badguys.txt");
 $datacenters = new LoadedList("https://raw.githubusercontent.com/client9/ipcat/master/datacenters.csv");
