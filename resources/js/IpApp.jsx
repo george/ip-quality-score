@@ -2,11 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import Hero from './containers/Hero.jsx';
+import GetStarted from './containers/GetStarted.jsx';
 
 export default function App() {
     return (
-        <div className='flex h-[75vh]'>
+        <div className='min-h-[100vh]'>
             <Hero/>
+            <GetStarted/>
         </div>
     );
 }

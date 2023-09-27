@@ -15,7 +15,7 @@ export default function ResultContainer(props) {
             <button onClick={() => setOpen(!open)} className='items-center justify-between text-white'>
                 <motion.div animate={open ? 'open' : 'closed'}>
                     <span className={'text-center text-xl font-medium'}>
-                        <span className='text-green-400'>
+                        <span className='text-blue-500'>
                             {props.child.props.title}
                         </span>
 

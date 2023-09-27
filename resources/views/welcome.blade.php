@@ -8,14 +8,16 @@
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=fira-code:400" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=montserrat:900|oxygen:700" rel="stylesheet" />
 
     @vite('./resources/css/app.css')
 </head>
 <body class="antialiased">
 <div class="overflow-none min-h-screen">
-    <nav class='p-8 bg-[#121212] text-center text-white text-lg text-green-500 font-semibold'>
-        Your IP is <span class='text-red-500'>{{$ip}}</span>. Are you vulnerable?
+    <nav class='p-6 text-center text-slate-750 bg-white text-xl font-extrabold shadow-xl shadow-gray-200 z-20 mb-10'>
+        <span class="text-center">
+            Your IP is <span class='text-red-500'>{{$ip}}</span>. Are you vulnerable?
+        </span>
     </nav>
 
     <div id="root">

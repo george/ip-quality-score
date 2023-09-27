@@ -1,76 +1,22 @@
-import React, { useState } from 'react';
-import { useEffectOnce} from 'usehooks-ts';
-import Results from "./Results.jsx";
+import React from 'react';
 
-/*
-Taken from Martin Devillers on StackOverflow
- */
-const fetchWebRtcLocalIp = (updateResults) => {
-    window.RTCPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
-    const pc = new RTCPeerConnection({iceServers:[]}), noop = function(){};
-
-    pc.createDataChannel("");
-    pc.createOffer(pc.setLocalDescription.bind(pc), noop);
-
-    pc.onicecandidate = function(ice){
-        if(!ice || !ice.candidate || !ice.candidate.candidate) {
-            return;
-        }
-
-        try {
-            updateResults(/([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/.exec(ice.candidate.candidate)[1]);
-        } catch (exc) {
-        }
-
-        pc.onicecandidate = noop;
-    };
-}
 export default function Hero() {
-    const [results, setResults] = useState(null);
-    const [webRtcIp, setWebRtcIp] = useState('Unknown (local)');
-
-    const updateResults = (webRtcIp) => {
-        if (results) {
-            const newResults = results;
-            newResults.props.webRtcIp = webRtcIp;
-
-            setResults(newResults);
-        }
-
-        setWebRtcIp(webRtcIp);
-    }
-
-    fetchWebRtcLocalIp(updateResults);
-
-    useEffectOnce(() => {
-        fetch('/api/check').then((response) => {
-            response.json().then((data) => {
-                setResults(<Results
-                        ip={data['ip']}
-                        webRtcIp={webRtcIp}
-                        geolocation={data['geolocationInfo']}
-                        cinscoreFlagged={data['cinscoreFlagged']}
-                        fraudScore={data['fraudScore']}
-                        vpn={data['vpn']}
-                    />
-                );
-            })
-        });
-    });
-
     return (
-        <div className='m-auto basis-[75%]'>
-            <div className="py-[10%] text-center text-green-400 border-green-800 bg-[#121212] border-4 rounded-lg">
-                {results ||
-                    <div className="font-semibold">
-                        Loading your IP information...
+        <div className='background-main'>
+            <div className='flex min-h-[100vh]'>
+                <div className='mx-auto'>
+                    <div className='mx-auto mt-[10%] text-gray-800 font-extrabold font-monserrat text-6xl text-center'>
+                        Find out what your IP says.
 
-                        <br/>
-                        <br/>
+                        <h1 className='text-blue-500'>Completely free.</h1>
 
-                        This should just take a second.
+                        <button className='mt-[2%] text-lg bg-blue-700 rounded-xl px-[5%] py-[2%] text-white shadow-2xl'>
+                            <a href='#begin'>
+                                Get Started
+                            </a>
+                        </button>
                     </div>
-                }
+                </div>
             </div>
         </div>
     )

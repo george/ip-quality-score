@@ -23,9 +23,6 @@ This project is built using PHP and Laravel, with a React.JS frontend.
 
 ## To-Do
 
-Ideally, I'd like to rewrite portions of the frontend to be more modern.
-I'm not sure when I'll do this, but it could look nicer.
-
 I'd like to improve WebRTC IP detection soon, since there's better
 ways of doing it than what is currently being used in this project.
 
