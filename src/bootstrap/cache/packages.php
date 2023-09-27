@@ -1,4 +1,11 @@
 <?php return array (
+  'inertiajs/inertia-laravel' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Inertia\\ServiceProvider',
+    ),
+  ),
   'laravel/sail' => 
   array (
     'providers' => 
@@ -39,17 +46,6 @@
     'providers' => 
     array (
       0 => 'Termwind\\Laravel\\TermwindServiceProvider',
-    ),
-  ),
-  'spatie/laravel-google-fonts' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Spatie\\GoogleFonts\\GoogleFontsServiceProvider',
-    ),
-    'aliases' => 
-    array (
-      'GoogleFonts' => 'Spatie\\GoogleFonts\\GoogleFontsFacade',
     ),
   ),
   'spatie/laravel-ignition' => 

@@ -1,0 +1,140 @@
+version: '3'
+
+networks:
+  laravel:
+
+services:
+  nginx:
+    build:
+      context: ./docker
+      dockerfile: nginx.dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+        - USER=${USER:-laravel}
+    restart: unless-stopped
+    container_name: nginx
+    ports:
+      - 8000:8000
+    volumes:
+      - public:/var/www/html/public
+      - ./src:/var/www/html
+      - ./src/.env:/var/www/html/.env
+    depends_on:
+      - php
+      - laravel-queue
+      - laravel-cron
+    networks:
+      - laravel
+
+  php:
+    build:
+      context: ./docker
+      dockerfile: php.dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+        - USER=${USER:-laravel}
+    container_name: php
+    ports:
+      - ":9000"
+    volumes:
+      - public:/var/www/html/public
+      - ./src:/var/www/html
+      - ./src/.env:/var/www/html/.env
+    networks:
+      - laravel
+
+  laravel-cron:
+    build:
+      context: ./docker
+      dockerfile: php.dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+        - USER=${USER:-laravel}
+    container_name: laravel-cron
+    volumes:
+      - ./src:/var/www/html
+      - ./src/.env:/var/www/html/.env
+    working_dir: /var/www/html
+    entrypoint: ['php', '/var/www/html/artisan', 'schedule:work']
+    networks:
+      - laravel
+
+  laravel-queue:
+    build:
+      context: ./docker
+      dockerfile: php.dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+        - USER=${USER:-laravel}
+    container_name: laravel-queue
+    volumes:
+      - ./src:/var/www/html
+      - ./src/.env:/var/www/html/.env
+    working_dir: /var/www/html
+    entrypoint: ['php', '/var/www/html/artisan', 'queue:work']
+    networks:
+      - laravel
+
+  composer:
+    build:
+      context: ./docker
+      dockerfile: composer.dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+        - USER=${USER:-laravel}
+    container_name: composer
+    volumes:
+      - ./src:/var/www/html
+      - ./src/.env:/var/www/html/.env
+    working_dir: /var/www/html
+    depends_on:
+      - php
+    user: ${USER:-laravel} #system user
+    profiles: ["composer"]
+    entrypoint: ['composer', '--ignore-platform-reqs']
+    networks:
+      - laravel
+
+  artisan:
+    build:
+      context: ./docker
+      dockerfile: php.dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+        - USER=${USER:-laravel}
+    container_name: artisan
+    volumes:
+      - ./src:/var/www/html
+      - ./src/.env:/var/www/html/.env
+    working_dir: /var/www/html
+    profiles: ["artisan"]
+    entrypoint: ['php', '/var/www/html/artisan']
+    networks:
+      - laravel
+
+  npm:
+    build:
+      context: ./src/
+      dockerfile: ../docker/npm.dockerfile
+    working_dir: /var/www/html
+    container_name: npm
+    volumes:
+      - public:/var/www/html/public
+      - ./src:/var/www/html
+      - ./src/.env:/var/www/html/.env
+    ports:
+      - 3000:3000
+      - 3001:3001
+    depends_on:
+      - nginx
+    networks:
+      - laravel
+
+volumes:
+  public:

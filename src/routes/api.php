@@ -58,11 +58,11 @@ function getFraudScore(string $ipAddress):int {
 }
 
 Route::get('check', function (Request $request, Response $response) use ($datacenters, $cinscore_list) {
-    $ip = $request->ip() == "127.0.0.1" ? "12.19.29.29" : $request->ip();
+    $ip = $request->ip() == "127.0.0.1" || "0.0.0.0" ? "12.19.29.29" : $request->ip();
     $curl = curl_init();
 
     curl_setopt($curl, CURLOPT_URL, "https://ipapi.co/$ip/json/");
-    curl_setopt($curl, CURLOPT_USERAGENT, "Hostile API");
+    curl_setopt($curl, CURLOPT_USERAGENT, "IP Fraud Score Checking");
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
     $result = json_decode(curl_exec($curl), true);

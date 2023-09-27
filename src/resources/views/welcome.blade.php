@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=montserrat:900|oxygen:700" rel="stylesheet" />
 
-    @vite('./resources/css/app.css')
+    @vite('resources/css/app.css')
 </head>
 <body class="antialiased">
 <div class="overflow-none min-h-screen">
@@ -21,7 +21,7 @@
     </nav>
 
     <div id="root">
-        @vite('./resources/js/app.js')
+        @vite('resources/js/app.js')
     </div>
 </div>
 </body>
