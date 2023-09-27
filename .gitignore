@@ -1,12 +1,12 @@
-/.phpunit.cache
-/node_modules
-/public/build
-/public/hot
-/public/storage
-/storage/
-/vendor
+*/.phpunit.cache
+*/node_modules
+*/public/build
+*/public/hot
+*/public/storage
+*/storage/
+*/vendor
 *.log
-.env
+src/.env
 .env.backup
 .env.production
 .phpunit.result.cache
@@ -18,3 +18,5 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+*.DS_STORE
