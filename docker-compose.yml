@@ -6,7 +6,7 @@ networks:
 services:
   nginx:
     build:
-      context: ./docker
+      context: ./.docker/
       dockerfile: nginx.dockerfile
       args:
         - UID=${UID:-1000}
@@ -15,7 +15,7 @@ services:
     restart: unless-stopped
     container_name: nginx
     ports:
-      - 8000
+      - 80:8000
     volumes:
       - public:/var/www/html/public
       - ./src:/var/www/html
@@ -29,7 +29,7 @@ services:
 
   php:
     build:
-      context: ./docker
+      context: ./.docker/
       dockerfile: php.dockerfile
       args:
         - UID=${UID:-1000}
@@ -47,7 +47,7 @@ services:
 
   laravel-cron:
     build:
-      context: ./docker
+      context: ./.docker/
       dockerfile: php.dockerfile
       args:
         - UID=${UID:-1000}
@@ -64,7 +64,7 @@ services:
 
   laravel-queue:
     build:
-      context: ./docker
+      context: ./.docker/
       dockerfile: php.dockerfile
       args:
         - UID=${UID:-1000}
@@ -81,7 +81,7 @@ services:
 
   composer:
     build:
-      context: ./docker
+      context: ./.docker/
       dockerfile: composer.dockerfile
       args:
         - UID=${UID:-1000}
@@ -102,7 +102,7 @@ services:
 
   artisan:
     build:
-      context: ./docker
+      context: ./.docker/
       dockerfile: php.dockerfile
       args:
         - UID=${UID:-1000}
@@ -121,7 +121,7 @@ services:
   npm:
     build:
       context: ./src/
-      dockerfile: ../docker/npm.dockerfile
+      dockerfile: ../.docker/npm.dockerfile
     working_dir: /var/www/html
     container_name: npm
     volumes:
