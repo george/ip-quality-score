@@ -64,6 +64,24 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          docker-compose build
+          docker tag ip-quality-score-npm $ECR_REGISTRY/$ECR_REPOSITORY:npm-$IMAGE_TAG
+          docker tag ip-quality-score-nginx $ECR_REGISTRY/$ECR_REPOSITORY:nginx-$IMAGE_TAG
+          docker tag ip-quality-score-php $ECR_REGISTRY/$ECR_REPOSITORY:php-$IMAGE_TAG
+          docker tag ip-quality-score-laravel-cron $ECR_REGISTRY/$ECR_REPOSITORY:laravel-cron-$IMAGE_TAG
+          docker tag ip-quality-score-laravel-queue $ECR_REGISTRY/$ECR_REPOSITORY:iplaravel-queue-$IMAGE_TAG
+          
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:npm-$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:npm-$IMAGE_TAG" >> $GITHUB_OUTPUT
+          
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:nginx-$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:nginx-$IMAGE_TAG" >> $GITHUB_OUTPUT
+          
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:php-$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:php-$IMAGE_TAG" >> $GITHUB_OUTPUT
+          
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:laravel-cron-$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:laravel-cron-$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:iplaravel-queue-$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:iplaravel-queue-$IMAGE_TAGG" >> $GITHUB_OUTPUT
