@@ -10,7 +10,7 @@ export default function GetStarted() {
     const visible = useIsVisible(ref);
 
     return (
-        <div className='background-flip pt-[50%]'>
+        <div className='background-flip pt-[50%] bg-cover bg-no-repeat'>
             <div className='bg-white'>
                 <motion.div ref={ref} animate={visible ? { x: '5%' } : 0 } transition={{ transition: 'ease-in', duration: .75 }} className='pt-2 pb-5'>
                     <div className='px-[10%] my-[-10%]'>

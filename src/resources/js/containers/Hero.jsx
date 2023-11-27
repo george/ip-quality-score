@@ -2,10 +2,10 @@ import React from 'react';
 
 export default function Hero() {
     return (
-        <div className='background-main'>
+        <div className='background-main bg-no-repeat bg-cover'>
             <div className='flex min-h-[100vh]'>
                 <div className='mx-auto'>
-                    <div className='mx-auto mt-[10%] text-gray-800 font-extrabold font-monserrat text-6xl text-center'>
+                    <div className='mx-[5%] mx-auto mt-[25%] text-gray-800 font-extrabold font-monserrat text-4xl lg:text-6xl text-center'>
                         Find out what your IP says.
 
                         <h1 className='text-blue-500'>Completely free.</h1>
